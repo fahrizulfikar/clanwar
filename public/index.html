@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Perang Kaum — Online</title>
+<link rel="icon" href="data:,">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;background:#171108;color:#efe6d4;overflow:hidden;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;user-select:none;-webkit-user-select:none;}
+  #app{display:flex;flex-direction:column;height:100vh;max-width:820px;margin:0 auto;}
+  .hidden{display:none!important;}
+  button{font-family:inherit;cursor:pointer;}
+  .center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;overflow:auto;}
+  h1{font-size:28px;margin:0 0 4px;color:#e8c878;letter-spacing:.5px;}
+  .sub{opacity:.8;font-size:13px;max-width:460px;line-height:1.5;margin:0 0 16px;}
+  input{background:#241c0f;border:1px solid #4a3a1a;color:#efe6d4;border-radius:10px;padding:11px;font-size:15px;width:100%;max-width:320px;text-align:center;margin-bottom:9px;}
+  .btn{background:#d8b86a;border:none;color:#1a1304;font-weight:800;font-size:15px;padding:12px 18px;border-radius:11px;width:100%;max-width:320px;margin:4px 0;}
+  .btn.sec{background:#3a2c12;color:#efe6d4;border:1px solid #6b5320;}
+  .row{display:flex;gap:8px;width:100%;max-width:320px;}.row input{margin-bottom:0;}
+  .err{color:#e2574a;font-size:13px;min-height:18px;margin-top:6px;font-weight:700;}
+  #teams{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%;max-width:520px;margin-bottom:8px;}
+  .teamBox{border:2px solid #4a3a1a;border-radius:12px;padding:8px;}
+  .teamBox.joinable{cursor:pointer;}
+  .teamBox.joinable:hover{background:#ffffff0d;}
+  .joinTag{font-size:10px;background:#2e7d32;color:#fff;padding:1px 7px;border-radius:9px;vertical-align:middle;margin-left:4px;}
+  .teamBox.tdoff{opacity:.55;}
+  .slot .x{background:#5a2330;color:#f0c0c0;border:none;border-radius:6px;padding:2px 7px;cursor:pointer;font-size:11px;}
+  .teamBox h3{margin:0 0 6px;font-size:13px;}
+  .slot{display:flex;align-items:center;gap:6px;font-size:12px;background:#241c0f;border:1px solid #3a2c12;border-radius:8px;padding:6px;margin-bottom:5px;}
+  .slot.me{border-color:#e8c878;box-shadow:0 0 0 2px #e8c87833;}
+  .slot .nm{flex:1;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .slot .km{font-size:10px;opacity:.7;}
+  .kaumPick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:540px;margin:6px 0 12px;}
+  .kp{background:#241c0f;border:1px solid #4a3a1a;border-radius:10px;padding:7px 9px;font-size:11.5px;color:#efe6d4;max-width:165px;}
+  .kp.on{border-color:#e8c878;background:#2c2210;color:#fff;}
+  .card2{background:#241c0f;border:1px solid #3a2c12;border-radius:10px;padding:9px;margin-bottom:8px;}
+  .trow{display:flex;align-items:center;gap:5px;margin:4px 0;font-size:12px;flex-wrap:wrap;}
+  .trow>span:first-child{width:40px;opacity:.8;text-align:left;}
+  .rchip{background:#1c1609;border:1px solid #4a3a1a;border-radius:8px;padding:5px 9px;font-size:14px;color:#efe6d4;cursor:pointer;}
+  .rchip.on{border-color:#e8c878;background:#2c2210;}
+  .orow{display:flex;align-items:center;gap:6px;background:#241c0f;border:1px solid #3a2c12;border-radius:8px;padding:7px;margin-bottom:5px;font-size:12px;}
+  .oinfo{flex:1;text-align:left;}
+  #chatBtn{position:fixed;right:12px;bottom:70px;width:44px;height:44px;border-radius:50%;background:#2c2210;border:1px solid #e8c878;color:#fff;font-size:20px;z-index:40;cursor:pointer;box-shadow:0 2px 8px #0008;}
+  #muteBtn{position:fixed;right:12px;bottom:122px;width:38px;height:38px;border-radius:50%;background:#241c0f;border:1px solid #4a3a1a;color:#fff;font-size:16px;z-index:40;cursor:pointer;box-shadow:0 2px 8px #0008;}
+  button:active{ transform:scale(0.94); }
+  #endTitle{ animation:pop .4s ease; } @keyframes pop{ 0%{transform:scale(.5);opacity:0} 70%{transform:scale(1.12)} 100%{transform:scale(1);opacity:1} }
+  #chatMenu{position:fixed;right:12px;bottom:120px;display:flex;flex-direction:column;gap:5px;z-index:40;max-width:210px;}
+  #chatMenu button{background:#241c0f;border:1px solid #4a3a1a;color:#efe6d4;border-radius:10px;padding:8px 12px;font-size:13px;cursor:pointer;text-align:right;box-shadow:0 2px 6px #0006;}
+  #chatLog{position:fixed;left:8px;top:92px;display:flex;flex-direction:column;gap:4px;z-index:39;max-width:72%;pointer-events:none;}
+  .chatLine{background:#000b;color:#fff;font-size:12px;padding:4px 9px;border-radius:9px;border-left:3px solid #888;}
+  .codebox{font-size:22px;font-weight:800;letter-spacing:3px;color:#e8c878;background:#100c05;border:1px solid #4a3a1a;border-radius:10px;padding:8px 16px;margin-bottom:10px;}
+  #hdr{background:linear-gradient(#2a2110,#211a0d);border-bottom:2px solid #4a3a1a;padding:6px 8px;}
+  #res{display:flex;gap:5px;align-items:center;font-size:12px;font-weight:700;flex-wrap:wrap;}
+  .r{display:flex;align-items:center;gap:3px;background:#100c05;border:1px solid #4a3a1a;border-radius:8px;padding:3px 6px;}
+  .r small{opacity:.6;font-weight:600;}
+  #hdr2{display:flex;align-items:center;gap:6px;margin-top:5px;font-size:11.5px;flex-wrap:wrap;}
+  #kaumTag{background:#3a2c12;border:1px solid #6b5320;border-radius:7px;padding:2px 7px;font-weight:700;}
+  .pill{font-size:10.5px;background:#100c05;border:1px solid #4a3a1a;border-radius:6px;padding:1px 6px;color:#caa45a;font-weight:700;}
+  #timer{margin-left:auto;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;background:#100c05;border:1px solid #4a3a1a;border-radius:7px;padding:2px 8px;}
+  #scoreRow{display:flex;gap:5px;padding:5px 8px;background:#1c160c;border-bottom:1px solid #3a2c12;font-size:11px;font-weight:800;flex-wrap:wrap;}
+  .chip{padding:2px 7px;border-radius:999px;background:#100c05;border:1px solid #2b394f;}
+  #view{flex:1;overflow-y:auto;padding:9px 9px 14px;-webkit-overflow-scrolling:touch;}
+  h2.sec{font-size:13px;margin:4px 2px 7px;color:#d8b86a;text-transform:uppercase;letter-spacing:.3px;}
+  .vbar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+  .vtab{background:#241c0f;border:1px solid #4a3a1a;color:#cabfa6;border-radius:9px;padding:5px 9px;font-size:11.5px;font-weight:700;}
+  .vtab.on{border-color:#e8c878;background:#2c2210;color:#fff;}
+  .renamebar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:9px;font-size:11px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:7px;}
+  .card{background:#241c0f;border:1px solid #4a3a1a;border-radius:11px;padding:8px;display:flex;flex-direction:column;gap:5px;}
+  .card .top{display:flex;align-items:center;gap:6px;}.card .ic{font-size:20px;width:26px;text-align:center;}
+  .card .nm{font-weight:800;font-size:13px;line-height:1.1;}.card .lv{font-size:10.5px;color:#caa45a;font-weight:700;}
+  .card .ds{font-size:10.5px;color:#b7ac93;line-height:1.3;min-height:26px;}
+  .cost{display:flex;gap:6px;font-size:10.5px;font-weight:700;flex-wrap:wrap;}.cost .no{color:#e07a5a;}
+  .act{margin-top:auto;border:none;border-radius:8px;padding:7px;font-weight:800;font-size:12px;color:#1a1304;background:#d8b86a;}
+  .act:disabled{background:#3a3322;color:#7a715a;}.act.alt{background:#7d5a2a;color:#fff;}
+  .pillL{font-size:10px;background:#100c05;border:1px solid #4a3a1a;border-radius:6px;padding:1px 5px;color:#caa45a;font-weight:700;}
+  .queue{background:#100c05;border:1px dashed #4a3a1a;border-radius:10px;padding:7px;margin-bottom:9px;}
+  .qrow{display:flex;align-items:center;gap:7px;font-size:11.5px;padding:3px 0;border-bottom:1px solid #2a2110;}.qrow:last-child{border:0;}
+  .bar2{flex:1;height:6px;background:#2a2110;border-radius:4px;overflow:hidden;}.bar2 i{display:block;height:100%;background:#d8b86a;}
+  .x{background:#5a2424;border:1px solid #7c3a3a;color:#ffd7d7;border-radius:6px;padding:2px 7px;font-weight:800;font-size:10.5px;}
+  .step{display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+  .step button{width:24px;height:24px;border-radius:6px;border:1px solid #6b5320;background:#3a2c12;color:#efe6d4;font-weight:900;font-size:14px;}
+  .step .n{min-width:30px;text-align:center;font-weight:800;}
+  .mini{font-size:10px;background:#2a2110;border:1px solid #4a3a1a;color:#d8b86a;border-radius:6px;padding:3px 7px;font-weight:700;}
+  #mapWrap{width:100%;background:#0f1407;border:1px solid #34431a;border-radius:12px;overflow:hidden;}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin:7px 2px;}
+  .panel{background:#241c0f;border:1px solid #4a3a1a;border-radius:12px;padding:9px;margin-top:9px;}
+  .panel h3{margin:0 0 4px;font-size:14px;}
+  .urow{display:flex;align-items:center;gap:7px;font-size:11.5px;padding:4px 0;border-bottom:1px solid #2a2110;}
+  .urow .un{flex:1;}.urow .av{font-size:10.5px;color:#9a8f76;}
+  .send2{display:flex;gap:7px;margin-top:9px;}.send2 button{flex:1;border:none;border-radius:10px;padding:10px;font-weight:800;font-size:12.5px;}
+  .bAtk{background:#b5482f;color:#fff;}.bSup{background:#3a6b3a;color:#fff;}.bClose{background:#3a3322;color:#cfc6ad;}
+  .rep{background:#241c0f;border:1px solid #4a3a1a;border-left:4px solid #6b5320;border-radius:8px;padding:7px 9px;margin-bottom:6px;font-size:11.5px;line-height:1.4;}
+  .rep.win{border-left-color:#3a8b4a;}.rep.lose{border-left-color:#b5482f;}.rep .when{float:right;font-size:10px;color:#8a8067;}
+  #tabs{display:flex;background:#211a0d;border-top:2px solid #4a3a1a;}
+  .tab{flex:1;text-align:center;padding:8px 0 6px;font-size:10.5px;font-weight:700;color:#9a8f76;}
+  .tab .ti{font-size:19px;display:block;line-height:1;margin-bottom:2px;}
+  .tab.on{color:#efe6d4;background:#2c2210;box-shadow:inset 0 2px 0 #d8b86a;}
+  .badge{display:inline-block;min-width:15px;background:#b5482f;color:#fff;border-radius:9px;font-size:9.5px;padding:0 4px;margin-left:2px;}
+  .overlay{position:fixed;inset:0;background:#0d0a04f5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;z-index:40;max-width:820px;margin:0 auto;}
+  .overlay h1{font-size:28px;}
+  #toast{position:fixed;left:50%;top:54px;transform:translateX(-50%);background:#2c2210;border:1px solid #6b5320;color:#efe6d4;padding:7px 13px;border-radius:10px;font-size:12px;font-weight:700;opacity:0;transition:.25s;pointer-events:none;z-index:50;max-width:90%;}
+  #toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="screenMenu" class="center">
+    <h1>⚔️ PERANG KAUM</h1>
+    <div class="sub">Strategi perang online 2v2v2v2. Bangun banyak desa, latih pasukan, jarah & taklukkan lawan.</div>
+    <input id="nameInp" placeholder="Nama kamu" maxlength="14">
+    <button class="btn" id="btnQuick">⚡ Quick Match</button>
+    <button class="btn sec" id="btnCreate">➕ Buat Room</button>
+    <div class="row"><input id="codeInp" placeholder="Kode room" maxlength="4" style="text-transform:uppercase"><button class="btn sec" id="btnJoin" style="white-space:nowrap;width:auto;">Gabung</button></div>
+    <div class="err" id="menuErr"></div>
+    <div class="sub" style="opacity:.55;margin-top:14px">Main sendiri: buka http://localhost:3000. Main bareng teman: bagikan link ngrok.</div>
+  </div>
+  <div id="screenLobby" class="center hidden">
+    <div class="sub" style="margin-bottom:8px">Kode Room — bagikan ke temanmu:</div>
+    <div class="codebox" id="lobbyCode">----</div>
+    <div class="sub" style="margin:2px 0 4px;opacity:.7">Ketuk tim mana pun yang punya slot kosong untuk pindah.</div>
+    <div id="teams"></div>
+    <button class="btn" id="btnRandom" style="padding:7px 14px;font-size:13px;margin:2px 0 6px">🎲 Pilih Tim Acak</button>
+    <div class="sub" style="margin:4px 0">Pilih kaum-mu <i style="opacity:.7">(dirahasiakan dari pemain lain)</i>:</div>
+    <div class="kaumPick" id="kaumPick"></div>
+    <button class="btn" id="btnStart">Mulai Perang ⚔️</button>
+    <div class="sub" id="startHint" style="margin-top:8px"></div>
+  </div>
+  <div id="screenGame" class="hidden" style="flex:1;display:flex;flex-direction:column;min-height:0;">
+    <div id="hdr"><div id="res"></div><div id="hdr2"><span id="kaumTag">—</span><span class="pill" id="popPill">👥 0/0</span><span id="timer">30:00</span></div></div>
+    <div id="scoreRow"></div>
+    <div id="view"></div>
+    <div id="tabs">
+      <div class="tab on" data-tab="desa"><span class="ti">🏠</span>Desa</div>
+      <div class="tab" data-tab="pasukan"><span class="ti">⚔️</span>Pasukan</div>
+      <div class="tab" data-tab="pasar"><span class="ti">🏪</span>Pasar</div>
+      <div class="tab" data-tab="peta"><span class="ti">🗺️</span>Peta</div>
+      <div class="tab" data-tab="lapor"><span class="ti">📜</span>Laporan</div>
+    </div>
+    <div id="chatLog"></div>
+    <div id="chatMenu" class="hidden"></div>
+    <button id="muteBtn" title="Suara nyala/mati">🔊</button>
+    <button id="chatBtn" title="Chat tim">💬</button>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="endScreen" class="overlay hidden"><h1 id="endTitle">Selesai</h1><div class="sub" id="endSub"></div><button class="btn" onclick="location.reload()">Main Lagi</button></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="shared.js"></script>
+<script>
+"use strict";
+const { CONFIG, KAUM, BUILDINGS, RES, RES_IC, RES_NM, UNITS, UNIT_KEYS, TEAM_COLORS, TEAM_NAMES } = SHARED;
+const teamOf = f => Math.floor(f/2);
+const socket = io();
+const $ = id => document.getElementById(id);
+// token unik PER-TAB (tahan refresh, beda antar tab) untuk klaim ulang slot saat tak sengaja refresh
+const PK_TOKEN = (()=>{ let t=sessionStorage.getItem('pk_token'); if(!t){ t='tk'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); sessionStorage.setItem('pk_token',t); } return t; })();
+{ const rc=sessionStorage.getItem('pk_code'); if(rc) socket.emit('rejoin',{code:rc, token:PK_TOKEN}); }   // coba sambung lagi setelah refresh
+// ---- JUICE: efek suara ringan, disintesis (tanpa file audio) ----
+const SFX=(()=>{ let ctx,muted=false; try{ muted=localStorage.getItem('pk_mute')==='1'; }catch(e){}
+  function ac(){ try{ if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==='suspended') ctx.resume(); }catch(e){ return null; } return ctx; }
+  function tone(freq,dur,type,vol,when,slide){ if(muted) return; const c=ac(); if(!c) return; try{ const t=c.currentTime+(when||0),o=c.createOscillator(),g=c.createGain(); o.type=type||'sine'; o.frequency.setValueAtTime(freq,t); if(slide) o.frequency.exponentialRampToValueAtTime(slide,t+dur); g.gain.setValueAtTime(vol||0.18,t); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+dur+0.02);}catch(e){} }
+  function seq(ns,type,vol){ ns.forEach((n,i)=>tone(n[0],n[1]||0.16,type,vol,n[2]!=null?n[2]:i*0.12)); }
+  return { click(){tone(520,0.05,'square',0.10);}, send(){tone(360,0.2,'sawtooth',0.14,0,150);}, build(){tone(660,0.08,'sine',0.16);tone(990,0.12,'sine',0.14,0.07);},
+    win(){tone(560,0.1,'sine',0.18);tone(840,0.16,'sine',0.18,0.09);}, lose(){tone(220,0.28,'sawtooth',0.18,0,95);}, notify(){tone(880,0.07,'triangle',0.12);},
+    victory(){ seq([[523],[659],[784],[1047,0.3]],'sine',0.2); }, defeat(){ seq([[392,0.3],[330,0.3],[247,0.45]],'sawtooth',0.18); },
+    toggle(){ muted=!muted; try{localStorage.setItem('pk_mute',muted?'1':'0');}catch(e){} return muted; }, isMuted(){ return muted; } };
+})();
+document.addEventListener('pointerdown', function _w(){ try{ SFX.click(); }catch(e){} }, {once:true});
+let myFaction=null, myCode=null, STATE=null, lastLobby=null, chosenKaum=null;
+let tab='desa', target=null, srcId=null, sendUnits={}, sendRes={}, trainQty={}, unread=0, selVillage=null, openRep=null;
+// Pasar: form tukar sistem + form tawaran
+let mkGive='kayu', mkGet='liat', mkAmt=0, ofGive='kayu', ofGiveAmt=0, ofWant='besi', ofWantAmt=0;
+
+function show(scr){ ['screenMenu','screenLobby','screenGame'].forEach(s=>$(s).classList.toggle('hidden', s!==scr)); }
+function toast(m){ const t=$('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),1700); }
+function kaumById(id){ return KAUM.find(k=>k.id===id); }
+
+/* ===== MENU ===== */
+function nameVal(){ return ($('nameInp').value||'').trim() || ('Pemain'+(Math.random()*900+100|0)); }
+$('btnQuick').onclick=()=>socket.emit('quickMatch',{name:nameVal(),token:PK_TOKEN});
+$('btnCreate').onclick=()=>socket.emit('createRoom',{name:nameVal(),token:PK_TOKEN});
+$('btnJoin').onclick=()=>{ const c=($('codeInp').value||'').trim().toUpperCase(); if(c.length<4){$('menuErr').textContent='Masukkan kode 4 huruf.';return;} socket.emit('joinRoom',{code:c,name:nameVal(),token:PK_TOKEN}); };
+socket.on('errorMsg', m=>{ $('menuErr').textContent=m; toast(m); });
+socket.on('joined', ({code,faction})=>{ myCode=code; myFaction=faction; sessionStorage.setItem('pk_code',code); $('menuErr').textContent=''; show('screenLobby'); });
+socket.on('rejoinFail', ()=>{ sessionStorage.removeItem('pk_code'); });   // room sudah tutup / slot tak ada -> tampilkan menu biasa
+socket.on('kicked', ()=>{ myFaction=null; myCode=null; STATE=null; sessionStorage.removeItem('pk_code'); show('screenMenu'); $('menuErr').textContent='Kamu dikeluarkan dari room (di-kick / tim dimatikan host).'; });
+// ---- chat cepat & ping tim ----
+let pings=[];
+const CHAT_PRESETS=['⚔️ Serang sini!','🛡️ Bertahan!','🙏 Minta SD','🆘 Butuh bantuan','👍 Oke!','🏃 Mundur!','👑 Awas Bangsawan!','🏰 Rebut Benteng'];
+$('chatMenu').innerHTML=CHAT_PRESETS.map(m=>`<button data-msg="${m}">${m}</button>`).join('');
+$('chatBtn').onclick=()=> $('chatMenu').classList.toggle('hidden');
+$('chatMenu').querySelectorAll('button').forEach(b=> b.onclick=()=>{ socket.emit('chat',{msg:b.dataset.msg}); $('chatMenu').classList.add('hidden'); });
+function addChatLine(txt, team){ const d=document.createElement('div'); d.className='chatLine'; d.style.borderLeftColor=TEAM_COLORS[team]||'#888'; d.textContent=txt; $('chatLog').appendChild(d); while($('chatLog').children.length>5) $('chatLog').firstChild.remove(); setTimeout(()=>d.remove(),6500); }
+socket.on('chat', ({from,team,msg})=>{ addChatLine('💬 '+from+': '+msg, team); SFX.notify(); });
+socket.on('ping', ({from,team,x,y,name})=>{ pings.push({x,y,team,until:Date.now()+6000}); addChatLine('📍 '+from+' menandai '+name, team); SFX.notify(); });
+$('muteBtn').onclick=()=>{ const m=SFX.toggle(); $('muteBtn').textContent=m?'🔇':'🔊'; if(!m) SFX.click(); };
+$('muteBtn').textContent=SFX.isMuted()?'🔇':'🔊';
+
+/* ===== LOBBY ===== */
+socket.on('lobby', L=>{ lastLobby=L; renderLobby(L); });
+function renderLobby(L){
+  $('lobbyCode').textContent=L.code;
+  const isHost=myFaction===L.hostFaction, off=L.teamOff||[false,false,false,false];
+  let h='';
+  for(let t=0;t<4;t++){
+    const slots=L.slots.filter(s=>s.team===t), tOff=off[t];
+    const open=slots.some(s=>s.type==='open'), inHere=slots.some(s=>s.faction===myFaction);
+    const joinable=!tOff && open && !inHere;
+    const showTgl=isHost && !slots.some(s=>s.faction===L.hostFaction);   // host tak bisa matikan tim sendiri
+    h+=`<div class="teamBox ${joinable?'joinable':''} ${tOff?'tdoff':''}" data-team="${t}" style="border-color:${TEAM_COLORS[t]}"><h3 style="color:${TEAM_COLORS[t]}">Tim ${TEAM_NAMES[t]}${tOff?' <span class="joinTag" style="background:#7a2a2a">NONAKTIF</span>':(joinable?' <span class="joinTag">+ Gabung</span>':'')}${showTgl?`<button class="mini" data-tgl="${t}" data-off="${tOff?0:1}" style="float:right">${tOff?'Aktifkan':'Matikan'}</button>`:''}</h3>`;
+    if(tOff){ h+='<div class="slot" style="opacity:.45">— tim dimatikan —</div>'; }
+    else slots.forEach(s=>{
+      const me=s.faction===myFaction, ico=s.type==='human'?'🧑':s.type==='ai'?'🤖':'➕';
+      const nm=s.type==='open'?'<i style="opacity:.5">Kosong</i>':(s.name||('P'+(s.faction+1)));
+      const km=me?(s.kaum?kaumById(s.kaum).ic:''):(s.hasKaum?'❔':'');   // kaum lawan dirahasiakan
+      const kick=(isHost && s.type==='human' && !me)?`<button class="x" data-kick="${s.faction}" title="Keluarkan">✕</button>`:'';
+      h+=`<div class="slot ${me?'me':''}"><span>${ico}</span><span class="nm">${nm}${me?' (kamu)':''}</span><span class="km">${km}</span>${kick}</div>`;
+    });
+    h+='</div>';
+  }
+  $('teams').innerHTML=h;
+  $('teams').querySelectorAll('[data-tgl]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); socket.emit('toggleTeam',{team:+b.dataset.tgl, off:b.dataset.off==='1'}); });
+  $('teams').querySelectorAll('[data-kick]').forEach(b=> b.onclick=e=>{ e.stopPropagation(); socket.emit('kick',{faction:+b.dataset.kick}); });
+  $('teams').querySelectorAll('.teamBox.joinable').forEach(b=> b.onclick=e=>{ if(e.target.closest('[data-tgl],[data-kick]'))return; socket.emit('chooseTeam',{team:+b.dataset.team}); });
+  const myKaum=(L.slots.find(s=>s.faction===myFaction)||{}).kaum;
+  $('kaumPick').innerHTML=KAUM.map(k=>`<button class="kp ${k.id===myKaum?'on':''}" data-k="${k.id}">${k.ic} ${k.nm.replace('Kaum ','')}<div style="font-size:9.5px;opacity:.7">${k.ds}</div></button>`).join('');
+  $('kaumPick').querySelectorAll('.kp').forEach(b=> b.onclick=()=> socket.emit('setKaum',{kaum:b.dataset.k}));
+  const humans=L.slots.filter(s=>s.type==='human').length;
+  $('btnStart').classList.toggle('hidden', !isHost);
+  $('startHint').textContent=isHost?`${humans} pemain. Slot kosong (tim aktif) diisi AI. Tekan Mulai kapan saja.`:'Menunggu host memulai…';
+}
+$('btnStart').onclick=()=> socket.emit('startGame');
+$('btnRandom').onclick=()=> socket.emit('chooseTeam',{team:-1});
+
+/* ===== GAME ===== */
+socket.on('started', ()=> show('screenGame'));
+socket.on('state', st=>{ STATE=st; if($('screenGame').classList.contains('hidden')) show('screenGame'); renderHeader(); renderView(); if(st.ended) showEnd(st); });
+
+const me = ()=> STATE.me;
+function curV(){ const vs=me().villages; if(!vs.length) return null; let c=vs.find(v=>v.id===selVillage); if(!c) c=vs.find(v=>v.isHome)||vs[0]; return c; }
+const myLvl = key => (curV().buildings[key]||0);
+const kaumNow = ()=> me().kaum;
+const buildDiscount = ()=> kaumNow()==='pengrajin'?0.75:1;
+const buildSpeed = ()=> kaumNow()==='pengrajin'?1.33:1;
+const cavCostMult = ()=> kaumNow()==='penunggang'?0.80:1;
+const nobleCostMult = ()=> kaumNow()==='penakluk'?0.70:1;
+function costFor(key,level){ const b=BUILDINGS[key],d=buildDiscount(),o={}; for(const r of RES)o[r]=Math.round((b.base[r]||0)*Math.pow(b.cf,level-1)*d); return o; }
+function buildTimeFor(key,level){ const b=BUILDINGS[key]; const sp=(1+0.10*myLvl('markas'))*buildSpeed(); return Math.max(3,Math.round(b.time*Math.pow(1.2,level-1)/sp)); }
+function reqMet(key){ const b=BUILDINGS[key]; if(!b.req)return true; for(const k in b.req) if(myLvl(k)<b.req[k])return false; return true; }
+function trainSpeed(bKey){ return 1+0.12*myLvl(bKey); }
+function unitCost(u){ const U=UNITS[u]; let cm=U.cav?cavCostMult():1; if(U.noble)cm=nobleCostMult(); const o={}; for(const r of RES)o[r]=Math.round((U.cost[r]||0)*cm); return o; }
+const res = r => curV().res[r];
+function maxTrain(u){ const c=curV(),U=UNITS[u]; let cm=U.cav?cavCostMult():1; if(U.noble)cm=nobleCostMult(); let byRes=1e9; for(const r of RES){ const cost=Math.round((U.cost[r]||0)*cm); if(cost>0) byRes=Math.min(byRes,Math.floor(c.res[r]/cost)); } const byPop=Math.floor((c.popCap-c.popUsed)/U.pop); return Math.max(0,Math.min(byRes===1e9?0:byRes,byPop)); }
+
+function renderHeader(){
+  const m=me(); if(!m) return; const c=curV();
+  $('res').innerHTML = c ? RES.map(r=>{ const low=c.res[r]>=c.cap*0.98; return `<span class="r">${RES_IC[r]} <span style="${low?'color:#e2574a':''}">${c.res[r]}</span><small>/${c.cap}</small> <small>+${c.prod[r]}</small></span>`; }).join('') : '<span class="r">—</span>';
+  $('kaumTag').textContent = kaumById(m.kaum).ic+' '+kaumById(m.kaum).nm;
+  const pp=$('popPill'); if(c){ pp.innerHTML=`👥 ${c.popUsed}/${c.popCap}`; pp.style.color=c.popUsed>=c.popCap?'#e2574a':'#caa45a'; }
+  const t=STATE.noTimer?STATE.time:Math.max(0,STATE.duration-STATE.time);
+  $('timer').textContent=(STATE.noTimer?'⏱ ':'')+String(Math.floor(t/60)).padStart(2,'0')+':'+String(Math.floor(t%60)).padStart(2,'0')+(STATE.noTimer?' (uji)':'');
+  const order=[0,1,2,3].sort((a,b)=>STATE.villageCount[b]-STATE.villageCount[a]);
+  let scoreHtml=order.map(t=>`<span class="chip" style="border-color:${TEAM_COLORS[t]}"><span style="color:${TEAM_COLORS[t]}">●</span> ${STATE.villageCount[t]}🏯 · ${STATE.scores[t]}</span>`).join('');
+  // objektif akhir: dominasi 60% + tahan Benteng
+  const totV=STATE.villages.length, dp=Math.round((STATE.domPct||0.6)*100);
+  const lead=order[0], pct=totV?Math.round(100*STATE.villageCount[lead]/totV):0;
+  scoreHtml+=`<span class="chip" style="border-color:#caa45a">🎯 <span style="color:${TEAM_COLORS[lead]}">${TEAM_NAMES[lead]}</span> ${pct}%/${dp}%</span>`;
+  if(STATE.fortHold){ const f=STATE.fortHold, mm=s=>Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); scoreHtml+=`<span class="chip" style="border-color:#e0a93a">🏰 <span style="color:${TEAM_COLORS[f.team]}">${TEAM_NAMES[f.team]}</span> ${mm(f.time)}/${mm(f.need)}</span>`; }
+  $('scoreRow').innerHTML=scoreHtml;
+}
+function renderView(){
+  if(!STATE||!STATE.me) return;
+  const v=$('view'), sc=v.scrollTop;
+  v.innerHTML = tab==='desa'?viewDesa():tab==='pasukan'?viewPasukan():tab==='pasar'?viewPasar():tab==='peta'?viewPeta():viewLapor();
+  v.scrollTop=sc;
+  const incN=(STATE.me.incoming||[]).length;
+  document.querySelector('.tab[data-tab="lapor"]').innerHTML=`<span class="ti">📜</span>Laporan`+(incN>0?`<span class="badge">🛑${incN}</span>`:(unread>0?`<span class="badge">${unread}</span>`:''));
+}
+function villageBar(){
+  const vs=me().villages, c=curV();
+  let h='<div class="vbar">'+vs.map(v=>`<button class="vtab ${c&&v.id===c.id?'on':''}" data-act="selv" data-vid="${v.id}">${v.isHome?'👑':v.kind==='fort'?'🏰':'🏘️'} ${v.name}</button>`).join('')+'</div>';
+  if(c) h+=`<div class="renamebar"><button class="mini" data-act="rename">✎ Ganti Nama</button><span class="pillL">${c.kind==='home'?'Desa Induk':c.kind==='fort'?'Benteng':'Desa'} · 📍(${c.q},${c.r}) · 🧱Tembok ${c.wall} · Loyal ${c.loyalty}</span></div>`;
+  return h;
+}
+
+function viewDesa(){
+  if(!me().villages.length) return '<div class="queue" style="opacity:.85">🏳️ Semua desamu jatuh — kamu tersingkir. Tonton sisa pertandingan atau Main Lagi.</div>';
+  const c=curV();
+  let h=villageBar()+'<h2 class="sec">🏗️ Antrean Pembangunan</h2>';
+  if(!c.buildQueue.length) h+='<div class="queue" style="opacity:.7">Belum ada. Pilih bangunan untuk ditingkatkan.</div>';
+  else h+='<div class="queue">'+c.buildQueue.map((q,i)=>`<div class="qrow"><span>${BUILDINGS[q.key].ic} ${BUILDINGS[q.key].nm}→Lv${q.toLevel}</span><div class="bar2"><i style="width:${Math.max(0,Math.min(100,(1-q.remain/q.total)*100))}%"></i></div><span>${Math.ceil(q.remain)}s</span><button class="x" data-act="cancelBuild" data-i="${i}">✕</button></div>`).join('')+'</div>';
+  h+='<h2 class="sec">🏠 Bangunan</h2><div class="grid">';
+  for(const key in BUILDINGS){
+    const b=BUILDINGS[key], cur=myLvl(key), inQ=c.buildQueue.filter(q=>q.key===key).length, next=cur+inQ+1;
+    const maxed=next>b.max, reqok=reqMet(key), cost=maxed?null:costFor(key,next), afford=cost?RES.every(r=>res(r)>=cost[r]):false;
+    let costHtml,btn;
+    if(maxed){costHtml='<span class="pillL">Maksimum</span>';btn='<button class="act" disabled>Maks</button>';}
+    else if(!reqok){const need=Object.entries(b.req).map(([k,l])=>BUILDINGS[k].nm+' Lv'+l).join(', ');costHtml=`<span class="pillL" style="color:#e07a5a">🔒 ${need}</span>`;btn='<button class="act" disabled>Terkunci</button>';}
+    else{costHtml='<div class="cost">'+RES.map(r=>`<span class="${res(r)<cost[r]?'no':''}">${RES_IC[r]}${cost[r]}</span>`).join('')+`<span>⏱️${buildTimeFor(key,next)}s</span></div>`;btn=`<button class="act" data-act="build" data-key="${key}" ${afford?'':'disabled'}>${cur>0?'Naik→Lv'+next:'Bangun'}</button>`;}
+    h+=`<div class="card"><div class="top"><div class="ic">${b.ic}</div><div><div class="nm">${b.nm}</div><div class="lv">Level ${cur}/${b.max}</div></div></div><div class="ds">${b.ds}</div>${costHtml}${btn}</div>`;
+  }
+  return h+'</div>';
+}
+function viewPasukan(){
+  if(!me().villages.length) return '<div class="queue" style="opacity:.85">Tidak ada desa.</div>';
+  const c=curV();
+  let h=villageBar()+'<h2 class="sec">🛡️ Garnisun '+c.name+'</h2><div class="queue">';
+  const have=UNIT_KEYS.filter(u=>(c.troops[u]||0)>0);
+  h+= have.length?have.map(u=>`<span class="pillL" style="margin:2px 4px 2px 0;display:inline-block">${UNITS[u].ic} ${UNITS[u].nm}: ${c.troops[u]}</span>`).join(''):'<span style="opacity:.7">Belum ada pasukan.</span>';
+  h+='</div><h2 class="sec">⏳ Antrean Latih <span style="font-size:11px;opacity:.6">(paralel per jenis)</span></h2>';
+  if(!c.trainQueue.length) h+='<div class="queue" style="opacity:.7">Tidak ada pelatihan.</div>';
+  else for(const [bld,lab] of [['barak','🗡️ Infanteri'],['kandang','🐎 Kavaleri'],['bengkel','🛠️ Spesial'],['akademi','👑 Bangsawan']]){
+    const rows=c.trainQueue.map((q,i)=>({q,i})).filter(x=>UNITS[x.q.unit].b===bld);
+    if(!rows.length) continue;
+    h+=`<div class="queue"><div style="font-size:11px;opacity:.65;margin-bottom:3px">${lab}</div>`+rows.map((x,k)=>`<div class="qrow"><span>${UNITS[x.q.unit].ic} ${UNITS[x.q.unit].nm} ×${x.q.left}${k===0?' <span style="color:#7bd88f">▶</span>':' <span style="opacity:.45">tunggu</span>'}</span><div class="bar2"><i style="width:${Math.max(0,Math.min(100,(1-x.q.remain/x.q.perTime)*100))}%"></i></div><span>${Math.ceil(x.q.remain)}s</span><button class="x" data-act="cancelTrain" data-i="${x.i}">✕</button></div>`).join('')+'</div>';
+  }
+  h+='<h2 class="sec">🎯 Latih Pasukan</h2><div class="grid">';
+  for(const u of UNIT_KEYS){
+    const U=UNITS[u], unlocked=myLvl(U.b)>=1, qty=trainQty[u]||0, cost=unitCost(u);
+    const costHtml='<div class="cost">'+RES.map(r=>`<span class="${res(r)<cost[r]*Math.max(1,qty)?'no':''}">${RES_IC[r]}${cost[r]}</span>`).join('')+`<span>👥${U.pop}</span><span>⏱️${Math.max(1,Math.round(U.time/trainSpeed(U.b)))}s</span></div>`;
+    const stats=`<div class="ds">${U.ds}<br><b>Srg</b> ${U.atk} · <b>Tahan</b> ${U.dInf}/${U.dCav} · 🎒${U.carry}</div>`;
+    let body;
+    if(!unlocked) body=`<span class="pillL" style="color:#e07a5a">🔒 Butuh ${BUILDINGS[U.b].nm}</span><button class="act" disabled>Terkunci</button>`;
+    else body=costHtml+`<div class="step"><button data-act="qd" data-unit="${u}">−</button><span class="n" data-act="qedit" data-unit="${u}" style="cursor:pointer;text-decoration:underline dotted">${qty}</span><button data-act="qi" data-unit="${u}">+</button><button class="mini" data-act="qmax" data-unit="${u}">Max</button></div><button class="act alt" data-act="train" data-unit="${u}">Latih${qty>0?' '+qty:''}</button>`;
+    h+=`<div class="card"><div class="top"><div class="ic">${U.ic}</div><div class="nm">${U.nm}</div></div>${stats}${body}</div>`;
+  }
+  return h+'</div>';
+}
+
+function hexPoly(cx,cy,s){ let p=''; for(let i=0;i<6;i++){ const a=Math.PI/180*(60*i-30); p+=(cx+s*Math.cos(a)).toFixed(3)+','+(cy+s*Math.sin(a)).toFixed(3)+' '; } return p.trim(); }
+function devEmoji(d){ return d>=16?'🏰':d>=11?'🏯':d>=6?'🏠':'🛖'; }
+function devDeco(d,x,y,r){
+  let s='';
+  if(d>=6) s+=`<circle cx="${x}" cy="${y}" r="${(r+0.1).toFixed(2)}" fill="none" stroke="#caa45a" stroke-width="0.05" opacity="0.85"/>`;
+  if(d>=11) s+=`<circle cx="${x}" cy="${y}" r="${(r+0.2).toFixed(2)}" fill="none" stroke="#a7a7a7" stroke-width="0.08" stroke-dasharray="0.14 0.1"/>`;
+  if(d>=16){ for(let i=0;i<6;i++){ const a=Math.PI/3*i, dx=Math.cos(a)*(r+0.2), dy=Math.sin(a)*(r+0.2); s+=`<rect x="${(x+dx-0.07).toFixed(2)}" y="${(y+dy-0.07).toFixed(2)}" width="0.14" height="0.14" fill="#cdcdcd"/>`; } }
+  if(d>=20){ s+=`<circle cx="${x}" cy="${y}" r="${(r+0.33).toFixed(2)}" fill="none" stroke="#ffd86a" stroke-width="0.09"/><text x="${x}" y="${(y-r-0.42).toFixed(2)}" font-size="0.5" text-anchor="middle">✨</text>`; }
+  return s;
+}
+function viewPasar(){
+  if(!me().villages.length) return '<div class="queue" style="opacity:.85">Tidak ada desa.</div>';
+  const c=curV(), pas=myLvl('pasar'), fee=CONFIG.MARKET.fee, min=CONFIG.MARKET.minAmt;
+  let h=villageBar();
+  if(pas<1){ return h+`<div class="queue" style="opacity:.85">🏪 Desa ini belum punya <b>Pasar</b>. Bangun <b>Pasar</b> (butuh Markas Lv3) di tab Desa untuk mulai berdagang.</div>`; }
+  // Tukar dengan sistem (kurs tetap fee:1)
+  h+='<h2 class="sec">⚖️ Tukar dengan Sistem</h2><div class="card2">';
+  h+=`<div style="font-size:11px;opacity:.75;margin-bottom:4px">Tukar sumber daya lewat sistem (ada potongan kecil). Hasil pasti terlihat di pratinjau bawah, langsung masuk gudang.</div>`;
+  h+='<div class="trow"><span>Bayar</span>'+RES.map(r=>`<button class="rchip ${mkGive===r?'on':''}" data-act="mkgive" data-res="${r}">${RES_IC[r]}</button>`).join('')+'</div>';
+  h+='<div class="trow"><span>Dapat</span>'+RES.map(r=>`<button class="rchip ${mkGet===r?'on':''}" data-act="mkget" data-res="${r}">${RES_IC[r]}</button>`).join('')+'</div>';
+  const got=Math.floor(mkAmt/fee);
+  h+=`<div class="step"><button data-act="mkad">−</button><span class="n" data-act="mkaedit" style="cursor:pointer;text-decoration:underline dotted">${mkAmt}</span><button data-act="mkai">+</button><button class="mini" data-act="mkamax">Max</button></div>`;
+  h+=`<div style="font-size:12.5px;margin:5px 0">Bayar <b>${RES_IC[mkGive]}${mkAmt}</b> → dapat <b>${RES_IC[mkGet]}${got}</b></div>`;
+  const okSwap=mkGive!==mkGet && mkAmt>0 && Math.floor(c.res[mkGive])>=mkAmt && got>=1;
+  h+=`<button class="act alt" data-act="mkswap" ${okSwap?'':'disabled'}>Tukar</button></div>`;
+  // Buat tawaran (rasio bebas)
+  h+='<h2 class="sec">🤝 Buat Tawaran (rasio bebas)</h2><div class="card2">';
+  h+='<div class="trow"><span>Beri</span>'+RES.map(r=>`<button class="rchip ${ofGive===r?'on':''}" data-act="ofgive" data-res="${r}">${RES_IC[r]}</button>`).join('')+`<span class="n" data-act="ofgedit" style="cursor:pointer;text-decoration:underline dotted;margin-left:auto">${ofGiveAmt}</span></div>`;
+  h+='<div class="trow"><span>Minta</span>'+RES.map(r=>`<button class="rchip ${ofWant===r?'on':''}" data-act="ofwant" data-res="${r}">${RES_IC[r]}</button>`).join('')+`<span class="n" data-act="ofwedit" style="cursor:pointer;text-decoration:underline dotted;margin-left:auto">${ofWantAmt}</span></div>`;
+  h+=`<div style="font-size:11px;opacity:.7;margin:3px 0">Minimal ${min} tiap sisi. Sumber daya yang kamu beri ditahan sampai diterima/dibatalkan.</div>`;
+  const okPost=ofGive!==ofWant && ofGiveAmt>=min && ofWantAmt>=min && Math.floor(c.res[ofGive])>=ofGiveAmt;
+  h+=`<button class="act alt" data-act="mkpost" ${okPost?'':'disabled'}>Pasang Tawaran</button></div>`;
+  // Papan tawaran (global)
+  const offers=STATE.offers||[];
+  h+=`<h2 class="sec">📋 Papan Tawaran (${offers.length})</h2>`;
+  if(!offers.length) h+='<div class="queue" style="opacity:.6">Belum ada tawaran. Pasang tawaranmu di atas.</div>';
+  else offers.forEach(o=>{
+    const tag=o.mine?'<span style="color:#e8c878">· punyamu</span>':o.ally?'<span style="color:#7bd88f">· sekutu</span>':`· <span style="color:${TEAM_COLORS[o.team]}">●</span>`;
+    const canTake=!o.mine && Math.floor(c.res[o.wantRes])>=o.wantAmt;
+    const btn=o.mine?`<button class="x" data-act="mkcancel" data-id="${o.id}">Batal</button>`:`<button class="mini" data-act="mktake" data-id="${o.id}" ${canTake?'':'disabled'}>Terima</button>`;
+    h+=`<div class="orow"><span class="oinfo">Beri ${RES_IC[o.giveRes]}<b>${o.giveAmt}</b> → Minta ${RES_IC[o.wantRes]}<b>${o.wantAmt}</b> <small style="opacity:.8">${tag}</small></span>${btn}</div>`;
+  });
+  return h;
+}
+function viewPeta(){
+  const HEX=SHARED.HEX, R=STATE.hexR||HEX.R;
+  let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;
+  const hexes=HEX.all(R).map(c=>{ const p=HEX.pixel(c.q,c.r); if(p.x<minX)minX=p.x; if(p.x>maxX)maxX=p.x; if(p.y<minY)minY=p.y; if(p.y>maxY)maxY=p.y; return p; });
+  const pad=1.4, vb=`${(minX-pad).toFixed(2)} ${(minY-pad).toFixed(2)} ${(maxX-minX+pad*2).toFixed(2)} ${(maxY-minY+pad*2).toFixed(2)}`;
+  let h='<h2 class="sec">🗺️ Peta Hexagon</h2><div class="legend">'+[0,1,2,3].map(t=>`<span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${TEAM_COLORS[t]}"></span> ${TEAM_NAMES[t]}: ${STATE.villageCount[t]}</span>`).join('')+'</div><div class="legend" style="opacity:.8;font-size:10px">⚪ lingkar putih = desamu · 🟡 garis emas = desa yang sedang diatur</div>';
+  h+=`<div id="mapWrap"><svg viewBox="${vb}" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">`;
+  for(const p of hexes) h+=`<polygon points="${hexPoly(p.x,p.y,0.98)}" fill="#19220f" stroke="#3c4d23" stroke-width="0.06"/>`;
+  for(const a of STATE.armies){
+    const pr=a.progress, x=a.fromX+(a.tx-a.fromX)*pr, y=a.fromY+(a.ty-a.fromY)*pr, c=TEAM_COLORS[a.team];
+    h+=`<line x1="${a.fromX}" y1="${a.fromY}" x2="${a.tx}" y2="${a.ty}" stroke="${c}" stroke-opacity="0.3" stroke-width="0.08" stroke-dasharray="0.3 0.4"/><circle cx="${x}" cy="${y}" r="0.32" fill="${c}" stroke="#000" stroke-width="0.06"/><text x="${x}" y="${y-0.5}" font-size="0.6" text-anchor="middle">${a.mission==='attack'?'⚔️':a.mission==='support'?'➕':a.mission==='spy'?'🕵️':'↩️'}</text>`;
+  }
+  const activeVid=(curV()||{}).id;
+  for(const v of STATE.villages){
+    const col=v.owner===-1?'#8b96a8':TEAM_COLORS[v.team], sel=target===v.id, mine=v.owner===myFaction, active=v.id===activeVid;
+    const rad=v.isHome?0.62:v.kind==='fort'?0.6:0.5, dev=v.dev||0;
+    h+=`<g data-act="pick" data-vid="${v.id}" style="cursor:pointer">${dev>=20?`<circle cx="${v.x}" cy="${v.y}" r="${(rad+0.5).toFixed(2)}" fill="#ffd86a" opacity="0.18"/>`:''}${active?`<circle cx="${v.x}" cy="${v.y}" r="${(rad+0.22).toFixed(2)}" fill="none" stroke="#ffd86a" stroke-width="0.12" stroke-dasharray="0.2 0.12"/>`:''}<circle cx="${v.x}" cy="${v.y}" r="${rad}" fill="${col}" stroke="${sel?'#fff':'#0006'}" stroke-width="${sel?0.18:0.07}"/>${mine?`<circle cx="${v.x}" cy="${v.y}" r="${(rad+0.055).toFixed(2)}" fill="none" stroke="#ffffffd0" stroke-width="0.06"/>`:''}<text x="${v.x}" y="${v.y+0.26}" font-size="${rad*1.3}" text-anchor="middle">${devEmoji(dev)}</text>${devDeco(dev,v.x,v.y,rad)}${mine&&v.isHome?`<text x="${v.x}" y="${v.y-rad-0.72}" font-size="0.5" text-anchor="middle">👑</text>`:''}${sel?`<text x="${v.x}" y="${v.y+rad+0.65}" font-size="0.55" fill="#fff" text-anchor="middle" stroke="#000" stroke-width="0.05" paint-order="stroke">${v.name}</text>`:''}</g>`;
+  }
+  const _now=Date.now(); pings=pings.filter(p=>p.until>_now);
+  for(const p of pings){ const rr=(0.7+0.45*Math.sin(_now/190)).toFixed(2); h+=`<circle cx="${p.x}" cy="${p.y}" r="${rr}" fill="none" stroke="${TEAM_COLORS[p.team]||'#fff'}" stroke-width="0.16" opacity="0.95"/><text x="${p.x}" y="${(p.y-rr-0.15).toFixed(2)}" font-size="0.75" text-anchor="middle">📍</text>`; }
+  return h+'</svg></div>'+sendPanel();
+}
+function sendPanel(){
+  if(target==null) return '<div class="panel" style="opacity:.75">👆 Tap desa di peta untuk info & kirim pasukan.</div>';
+  const tg=STATE.villages.find(v=>v.id===target); if(!tg) return '';
+  const mine=STATE.villages.filter(v=>v.owner===myFaction);
+  let src=STATE.villages.find(v=>v.id===srcId && v.owner===myFaction); if(!src) src=mine.find(v=>v.isHome)||mine[0];
+  let h=`<div class="panel"><h3>${tg.kind==='home'?'🏯':tg.kind==='fort'?'🏰':'🏘️'} ${tg.name} <span class="pillL" style="color:${tg.owner===-1?'#8b96a8':TEAM_COLORS[tg.team]}">${tg.owner===-1?'Netral':'Tim '+TEAM_NAMES[tg.team]}</span></h3>`;
+  const ally = tg.owner!==-1 && teamOf(tg.owner)===teamOf(myFaction);
+  h+=`<div class="ds">📍(${tg.q},${tg.r}) · ${tg.wall!=null?'Tembok Lv<b>'+tg.wall+'</b> · ':''}${ally?'Pasukan <b>'+(tg.troops!=null?tg.troops:'?')+'</b> · Loyalitas <b>'+(tg.loyalty!=null?tg.loyalty:'?')+'</b>':'Pasukan <b>?</b> · Loyalitas <b>?</b> <span style="opacity:.6">(rahasia)</span>'}</div>`;
+  if(!ally) h+=`<div class="ds" style="color:#e8c878;margin-top:3px">Tanpa Bangsawan = <b>jarah</b> (curi SD). ${tg.owner===-1?'Bawa <b>1 Bangsawan</b> → menang langsung <b>menduduki</b> desa netral ini.':'Bawa <b>Bangsawan</b> → turunkan <b>loyalitas</b> musuh hingga 0 untuk <b>menaklukkan</b> (perlu beberapa serangan).'}</div>`;
+  if(!src){ return h+'<div class="ds" style="opacity:.7">Kamu belum punya desa untuk mengirim pasukan.</div></div>'; }
+  if(mine.length>1) h+='<div class="ds" style="margin-top:6px">Kirim dari: '+mine.map(m=>`<button class="mini" data-act="src" data-vid="${m.id}" ${m.id===src.id?'style="background:#6b5320;color:#fff"':''}>${m.name}</button>`).join(' ')+'</div>';
+  const avail=UNIT_KEYS.filter(u=>(src.units&&src.units[u]||0)>0);
+  h+='<div style="margin-top:6px">';
+  if(!avail.length) h+='<div class="ds" style="opacity:.7">Tidak ada pasukan di desa sumber.</div>';
+  else for(const u of avail){ const n=sendUnits[u]||0; h+=`<div class="urow"><span>${UNITS[u].ic}</span><span class="un">${UNITS[u].nm}</span><span class="av">${src.units[u]}</span><div class="step"><button data-act="sd" data-unit="${u}">−</button><span class="n" data-act="suedit" data-unit="${u}" style="cursor:pointer;text-decoration:underline dotted">${n}</span><button data-act="si" data-unit="${u}">+</button><button class="mini" data-act="sumax" data-unit="${u}">Max</button></div></div>`; }
+  h+='</div>';
+  if(ally && tg.id!==src.id){
+    const srcRes=(me().villages.find(v=>v.id===src.id)||{}).res||{kayu:0,liat:0,besi:0};
+    h+='<div class="ds" style="margin-top:7px;border-top:1px solid #2a2110;padding-top:6px">💰 Kirim Sumber Daya dari '+src.name+':</div>';
+    for(const r of RES){ const n=sendRes[r]||0; h+=`<div class="urow"><span>${RES_IC[r]}</span><span class="un">${RES_NM[r]}</span><span class="av">${Math.floor(srcRes[r])}</span><div class="step"><button data-act="rd" data-res="${r}">−</button><span class="n" data-act="sredit" data-res="${r}" style="cursor:pointer;text-decoration:underline dotted">${n}</span><button data-act="ri" data-res="${r}">+</button><button class="mini" data-act="resall" data-res="${r}">Semua</button></div></div>`; }
+  } else if(ally && tg.id===src.id){
+    h+='<div class="ds" style="margin-top:7px;opacity:.6">💰 (Pilih desa lain sebagai sumber untuk mengirim SD ke desa ini.)</div>';
+  }
+  h+='<div class="send2">';
+  if(!ally) h+='<button class="bAtk" data-act="attack">⚔️ Serang</button><button class="bSup" style="background:#5a4a7a" data-act="intip">🕵️ Intip</button>';
+  else h+='<button class="bSup" data-act="support">🛡️ Bantu</button><button class="bSup" style="background:#7d5a2a" data-act="sendres">💰 Kirim SD</button>';
+  h+='<button class="bSup" style="background:#3a5a7a" data-act="pingteam">📍 Ping Tim</button>';
+  h+='<button class="bClose" data-act="close">Tutup</button></div></div>';
+  return h;
+}
+function viewLapor(){
+  unread=0;
+  let h='';
+  const inc=me().incoming||[];
+  if(inc.length){
+    h+='<h2 class="sec" style="color:#e2574a">🛑 Serangan Masuk ('+inc.length+')</h2>';
+    h+=inc.map(x=>{
+      let d=`🛑 <b>${x.toName}</b>`;
+      d+= x.eta!=null?` · tiba <b>${x.eta}s</b>`:'';
+      d+= x.from?` · dari <b>${x.from}</b>`:'';
+      d+= x.perType?` · ${Object.entries(x.perType).map(([u,n])=>UNITS[u].ic+n).join(' ')}`:(x.types?` · jenis: ${x.types.join(', ')}`:(x.count!=null?` · ±<b>${x.count}</b> pasukan`:''));
+      d+= x.noble!=null?` · Bangsawan: <b>${x.noble?'ADA ⚠️':'tidak'}</b>`:'';
+      d+= x.outcome?` · perkiraan: <b>${x.outcome==='kalah'?'akan KALAH ⚠️':'akan bertahan ✅'}</b>`:'';
+      if(x.menara<2) d+=' <span style="opacity:.6">(naikkan Menara untuk detail)</span>';
+      return `<div class="rep lose">${d}</div>`;
+    }).join('');
+  }
+  h+='<h2 class="sec">📜 Laporan Perang</h2>';
+  const reps=me().reports||[];
+  if(!reps.length) return h+'<div class="queue" style="opacity:.7">Belum ada laporan.</div>';
+  h+=reps.map(r=>`<div class="rep ${r.cls||''}" ${r.detail?`data-act="rep" data-rid="${r.id}" style="cursor:pointer"`:''}><span class="when">⏱️${r.when}</span>${r.txt}${r.detail?(openRep===r.id?reportDetail(r.detail):' <span style="opacity:.5">› detail</span>'):''}</div>`).join('');
+  return h;
+}
+function spyDetail(d){
+  let h='<div style="margin-top:6px;border-top:1px solid #2a2110;padding-top:6px;font-size:11px;line-height:1.55" onclick="event.stopPropagation()">';
+  h+=`🕵️ <b>Intel ${d.place}</b> · ketajaman Pandai Besi Lv${d.pandai}<br>`;
+  if(d.troopTotal!=null) h+=`Total pasukan: <b>${d.troopTotal}</b><br>`;
+  if(d.res) h+=`Sumber daya: 🪵${d.res.kayu} 🧱${d.res.liat} ⚙️${d.res.besi}<br>`;
+  if(d.wall!=null) h+=`🧱 Tembok Lv${d.wall} · Loyalitas ${d.loyalty}<br>`;
+  if(d.troops) h+=`Rincian: ${Object.entries(d.troops).filter(([u,n])=>n>0).map(([u,n])=>(UNITS[u]?UNITS[u].ic:u)+n).join(' ')||'—'}<br>`;
+  if(d.markas!=null) h+=`🏛️ Markas Lv${d.markas}<br>`;
+  if(d.buildings) h+=`Bangunan: ${Object.entries(d.buildings).filter(([k,l])=>l>0).map(([k,l])=>(BUILDINGS[k]?BUILDINGS[k].ic:k)+l).join(' ')||'—'}<br>`;
+  if(d.pop) h+=`👥 Populasi: ${d.pop}<br>`;
+  if(d.queues) h+=`Antrean: ${[...(d.queues.build||[]),...(d.queues.train||[])].join(', ')||'kosong'}<br>`;
+  if(d.incoming!=null) h+=`⚔️ Serangan menuju desa ini: <b>${d.incoming}</b><br>`;
+  return h+'</div>';
+}
+function reportDetail(d){
+  if(d.spy) return spyDetail(d);
+  const list=t=>{ const e=Object.entries(t||{}).filter(([u,n])=>n>0); return e.length?e.map(([u,n])=>UNITS[u].ic+UNITS[u].nm+' '+n).join(', '):'—'; };
+  const km=k=> k?(kaumById(k)?kaumById(k).nm:k):'—';
+  let h='<div style="margin-top:6px;border-top:1px solid #2a2110;padding-top:6px;font-size:11px;line-height:1.55" onclick="event.stopPropagation()">';
+  h+=`<b>Hasil:</b> ${d.result==='taklukkan'?'👑 Ditaklukkan':d.result==='jarah'?'💰 Jarah berhasil':d.result==='menang'?'⚔️ Menang':'💥 Gagal'}<br>`;
+  h+=`⚔️ <b>Penyerang</b> (${d.atk}, kaum ${km(d.atkKaum)}): kirim ${list(d.atkSent)} · selamat ${list(d.atkSurv)} · tewas <b>${d.atkLost}</b><br>`;
+  h+=`🛡️ <b>Bertahan</b> (${d.def}${d.defKaum?', kaum '+km(d.defKaum):''}): ada ${list(d.defBefore)} · tewas <b>${d.defLost}</b>${d.defSurv&&Object.keys(d.defSurv).length?' · sisa '+list(d.defSurv):''}<br>`;
+  h+=`🏯 <b>Desa:</b> ${d.kind==='home'?'Induk (bonus tahan)':d.kind==='fort'?'Benteng (bonus tahan besar)':'biasa'} · 🧱 Tembok Lv${d.wallBefore}${d.wallAfter!==d.wallBefore?'→'+d.wallAfter+' (dirobohkan Pendobrak)':' (menambah pertahanan)'}<br>`;
+  if(d.nobles) h+=`👑 <b>Bangsawan:</b> ${d.nobles} · Loyalitas ${d.loyBefore}→${d.loyAfter}${d.conquered?' (desa JATUH)':''}<br>`;
+  if(d.loot&&(d.loot.kayu+d.loot.liat+d.loot.besi)>0) h+=`💰 <b>Rampasan:</b> 🪵${d.loot.kayu} 🧱${d.loot.liat} ⚙️${d.loot.besi}<br>`;
+  return h+'</div>';
+}
+
+/* ===== INPUT ===== */
+$('view').addEventListener('click', e=>{
+  const el=e.target.closest('[data-act]'); if(!el||!STATE) return;
+  const a=el.dataset.act, u=el.dataset.unit, c=curV();
+  if(a==='build'){ socket.emit('build',{vid:c.id, key:el.dataset.key}); SFX.click(); }
+  else if(a==='cancelBuild') socket.emit('cancelBuild',{vid:c.id, i:+el.dataset.i});
+  else if(a==='train'){ const ct=trainQty[u]||0; if(ct>0){ socket.emit('train',{vid:c.id, unit:u, count:ct}); SFX.click(); } trainQty[u]=0; renderView(); }
+  else if(a==='cancelTrain') socket.emit('cancelTrain',{vid:c.id, i:+el.dataset.i});
+  else if(a==='qi'){ trainQty[u]=(trainQty[u]||0)+1; renderView(); }
+  else if(a==='qd'){ trainQty[u]=Math.max(0,(trainQty[u]||0)-1); renderView(); }
+  else if(a==='qmax'){ trainQty[u]=maxTrain(u); renderView(); }
+  else if(a==='qedit'){ const n=parseInt(prompt('Latih '+UNITS[u].nm+' berapa? (maks '+maxTrain(u)+')', trainQty[u]||0)); if(!isNaN(n)) trainQty[u]=Math.max(0,Math.min(maxTrain(u),n)); renderView(); }
+  else if(a==='selv'){ selVillage=el.dataset.vid; renderView(); }
+  else if(a==='rename'){ const nm=prompt('Nama baru untuk '+c.name+':', c.name); if(nm) socket.emit('rename',{vid:c.id, name:nm}); }
+  else if(a==='pick'){ target=el.dataset.vid; sendUnits={}; sendRes={}; srcId=(curV()||{}).id; renderView(); }
+  else if(a==='src'){ srcId=el.dataset.vid; sendUnits={}; sendRes={}; renderView(); }
+  else if(a==='si'){ const sv=STATE.villages.find(v=>v.id===srcId); const mx=sv&&sv.units?sv.units[u]||0:0; sendUnits[u]=Math.min(mx,(sendUnits[u]||0)+1); renderView(); }
+  else if(a==='sd'){ sendUnits[u]=Math.max(0,(sendUnits[u]||0)-1); renderView(); }
+  else if(a==='sumax'){ const sv=STATE.villages.find(v=>v.id===srcId); sendUnits[u]=sv&&sv.units?sv.units[u]||0:0; renderView(); }
+  else if(a==='suedit'){ const sv=STATE.villages.find(v=>v.id===srcId); const mx=sv&&sv.units?sv.units[u]||0:0; const n=parseInt(prompt('Kirim '+UNITS[u].nm+' berapa? (punya '+mx+')', sendUnits[u]||0)); if(!isNaN(n)) sendUnits[u]=Math.max(0,Math.min(mx,n)); renderView(); }
+  else if(a==='ri'){ const r=el.dataset.res, sv=STATE.villages.find(v=>v.id===srcId), sr=(me().villages.find(v=>v.id===(sv||{}).id)||{}).res||{}; sendRes[r]=Math.min(Math.floor(sr[r]||0),(sendRes[r]||0)+100); renderView(); }
+  else if(a==='rd'){ const r=el.dataset.res; sendRes[r]=Math.max(0,(sendRes[r]||0)-100); renderView(); }
+  else if(a==='resall'){ const r=el.dataset.res, sv=STATE.villages.find(v=>v.id===srcId), sr=(me().villages.find(v=>v.id===(sv||{}).id)||{}).res||{}; sendRes[r]=Math.floor(sr[r]||0); renderView(); }
+  else if(a==='sredit'){ const r=el.dataset.res, sv=STATE.villages.find(v=>v.id===srcId), sr=(me().villages.find(v=>v.id===(sv||{}).id)||{}).res||{}; const n=parseInt(prompt('Kirim '+RES_NM[r]+' berapa? (punya '+Math.floor(sr[r]||0)+')', sendRes[r]||0)); if(!isNaN(n)) sendRes[r]=Math.max(0,Math.min(Math.floor(sr[r]||0),n)); renderView(); }
+  else if(a==='sendres'){ doSendRes(); }
+  else if(a==='mkgive'){ mkGive=el.dataset.res; if(mkGet===mkGive) mkGet=RES.find(r=>r!==mkGive); renderView(); }
+  else if(a==='mkget'){ mkGet=el.dataset.res; if(mkGive===mkGet) mkGive=RES.find(r=>r!==mkGet); renderView(); }
+  else if(a==='mkad'){ mkAmt=Math.max(0,mkAmt-50); renderView(); }
+  else if(a==='mkai'){ mkAmt=Math.min(Math.floor(c.res[mkGive]),mkAmt+50); renderView(); }
+  else if(a==='mkamax'){ mkAmt=Math.floor(c.res[mkGive]); renderView(); }
+  else if(a==='mkaedit'){ const n=parseInt(prompt('Bayar '+RES_NM[mkGive]+' berapa? (punya '+Math.floor(c.res[mkGive])+')', mkAmt)); if(!isNaN(n)) mkAmt=Math.max(0,Math.min(Math.floor(c.res[mkGive]),n)); renderView(); }
+  else if(a==='mkswap'){ socket.emit('marketSwap',{vid:c.id,giveRes:mkGive,getRes:mkGet,giveAmt:mkAmt}); toast('⚖️ Menukar '+RES_NM[mkGive]+' → '+RES_NM[mkGet]); mkAmt=0; renderView(); }
+  else if(a==='ofgive'){ ofGive=el.dataset.res; if(ofWant===ofGive) ofWant=RES.find(r=>r!==ofGive); renderView(); }
+  else if(a==='ofwant'){ ofWant=el.dataset.res; if(ofGive===ofWant) ofGive=RES.find(r=>r!==ofWant); renderView(); }
+  else if(a==='ofgedit'){ const n=parseInt(prompt('Beri '+RES_NM[ofGive]+' berapa? (punya '+Math.floor(c.res[ofGive])+')', ofGiveAmt)); if(!isNaN(n)) ofGiveAmt=Math.max(0,Math.min(Math.floor(c.res[ofGive]),n)); renderView(); }
+  else if(a==='ofwedit'){ const n=parseInt(prompt('Minta '+RES_NM[ofWant]+' berapa?', ofWantAmt)); if(!isNaN(n)) ofWantAmt=Math.max(0,n); renderView(); }
+  else if(a==='mkpost'){ socket.emit('marketPost',{vid:c.id,giveRes:ofGive,giveAmt:ofGiveAmt,wantRes:ofWant,wantAmt:ofWantAmt}); toast('🤝 Tawaran dipasang'); ofGiveAmt=0; ofWantAmt=0; renderView(); }
+  else if(a==='mktake'){ socket.emit('marketAccept',{vid:c.id,offerId:+el.dataset.id}); toast('✅ Tawaran diterima'); }
+  else if(a==='mkcancel'){ socket.emit('marketCancel',{offerId:+el.dataset.id}); toast('↩️ Tawaran dibatalkan'); }
+  else if(a==='rep'){ const id=+el.dataset.rid; openRep=(openRep===id?null:id); renderView(); }
+  else if(a==='attack'||a==='support'){ doSend(a); }
+  else if(a==='intip'){ doSpy(); }
+  else if(a==='pingteam'){ socket.emit('ping',{vid:target}); toast('📍 Ping dikirim ke tim'); }
+  else if(a==='close'){ target=null; renderView(); }
+});
+function doSend(mission){
+  const tg=STATE.villages.find(v=>v.id===target); if(!tg) return;
+  const units={...sendUnits}; if(mission==='attack') delete units.mata;   // mata-mata dikirim lewat tombol Intip, bukan serang
+  let total=0; for(const k in units) total+=units[k];
+  if(total<=0){ toast('Pilih jumlah pasukan dulu.'); return; }
+  socket.emit('send',{fromId:srcId, toId:target, units, mission}); SFX.send();
+  toast((mission==='attack'?'⚔️ Menyerang ':'🛡️ Mendukung ')+tg.name);
+  sendUnits={}; renderView();
+}
+function doSpy(){
+  const tg=STATE.villages.find(v=>v.id===target); if(!tg) return;
+  const n=sendUnits.mata||0;
+  if(n<=0){ toast('Pilih jumlah Mata-mata dulu (latih di Bengkel).'); return; }
+  socket.emit('send',{fromId:srcId, toId:target, units:{mata:n}, mission:'spy'}); SFX.send();
+  toast('🕵️ Mengirim '+n+' Mata-mata ke '+tg.name);
+  sendUnits={}; renderView();
+}
+function doSendRes(){
+  const tg=STATE.villages.find(v=>v.id===target); if(!tg) return;
+  let total=0; for(const r in sendRes) total+=sendRes[r];
+  if(total<=0){ toast('Atur jumlah sumber daya dulu.'); return; }
+  socket.emit('sendRes',{fromId:srcId, toId:target, amount:sendRes});
+  toast('💰 Mengirim sumber daya ke '+tg.name);
+  sendRes={}; renderView();
+}
+document.querySelectorAll('.tab').forEach(t=> t.addEventListener('click', ()=>{
+  tab=t.dataset.tab; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+  if(tab!=='peta') target=null;
+  renderView();
+}));
+let lastRepCount=0, prevBuild=null;
+socket.on('state', st=>{
+  if(st.me&&st.me.reports){
+    if(st.me.reports.length>lastRepCount){
+      if(tab!=='lapor') unread+=(st.me.reports.length-lastRepCount);
+      const r=st.me.reports[0]; if(r){ if(r.cls==='win') SFX.win(); else if(r.cls==='lose') SFX.lose(); }   // suara hasil pertempuran
+    }
+    lastRepCount=st.me.reports.length;
+  }
+  if(st.me&&st.me.villages){ let bt=0; for(const v of st.me.villages){ for(const k in v.buildings) bt+=v.buildings[k]; } if(prevBuild!=null && bt>prevBuild) SFX.build(); prevBuild=bt; }   // suara bangunan selesai
+});
+function showEnd(st){
+  sessionStorage.removeItem('pk_code');   // match selesai: jangan coba reconnect ke room mati
+  const won=st.winner===teamOf(myFaction);
+  $('endScreen').classList.remove('hidden');
+  $('endTitle').textContent=won?'🏆 MENANG!':'💀 KALAH';
+  $('endTitle').style.color=won?'#7bd88f':'#e2574a';
+  won?SFX.victory():SFX.defeat();
+  const why=st.reason==='eliminasi'?'Semua tim lawan tersingkir.':st.reason==='dominasi'?'Menguasai ≥60% desa di peta.':st.reason==='benteng'?'Menguasai Benteng pusat 3 menit berturut.':'Waktu habis — pemenang dari jumlah desa.';
+  const mm=Math.floor((st.time||0)/60), ss=(st.time||0)%60;
+  let h=`<div style="margin-bottom:7px">Tim <b style="color:${TEAM_COLORS[st.winner]}">${TEAM_NAMES[st.winner]}</b> menang — ${why} <span style="opacity:.65">(${mm}m ${ss}d)</span></div>`;
+  const teams=[0,1,2,3].filter(t=>!(st.teamOff&&st.teamOff[t])).sort((a,b)=>st.villageCount[b]-st.villageCount[a]);
+  h+='<div style="font-size:12px;margin-bottom:9px">'+teams.map(t=>`<span style="color:${TEAM_COLORS[t]}">●</span> ${TEAM_NAMES[t]}: <b>${st.villageCount[t]}</b>🏯 · ${(st.scores||[])[t]||0} poin`).join(' &nbsp; ')+'</div>';
+  const rc=(st.recap||[]).filter(p=>p.stats&&(p.type==='human'||p.type==='ai'));
+  if(rc.length){
+    const sc=p=>p.stats.conquered*100+p.stats.killed+p.stats.looted/10+(p.stats.spied||0)*25;
+    rc.sort((a,b)=>sc(b)-sc(a)); const mvp=rc[0];
+    h+=`<div style="font-size:13px;margin:2px 0 6px">🏅 <b>MVP:</b> <span style="color:${TEAM_COLORS[mvp.team]}">${mvp.name}</span></div>`;
+    h+='<div style="overflow:auto;max-height:42vh"><table style="margin:0 auto;border-collapse:collapse;font-size:11.5px">';
+    h+='<tr style="opacity:.65"><td style="padding:3px 7px;text-align:left">Pemain</td><td title="desa direbut">👑</td><td title="musuh tewas">⚔️</td><td title="pasukan hilang">💀</td><td title="jarahan">💰</td><td title="intip sukses">🕵️</td></tr>';
+    h+=rc.map((p,i)=>`<tr style="background:${i%2?'#ffffff0a':'transparent'}"><td style="padding:3px 7px;text-align:left;${p.faction===myFaction?'color:#e8c878;font-weight:bold':''}"><span style="color:${TEAM_COLORS[p.team]}">●</span> ${p.name}${p.faction===myFaction?' (kamu)':''}${p===mvp?' 🏅':''}</td><td style="text-align:center;padding:0 6px">${p.stats.conquered}</td><td style="text-align:center;padding:0 6px">${p.stats.killed}</td><td style="text-align:center;padding:0 6px">${p.stats.lost}</td><td style="text-align:center;padding:0 6px">${p.stats.looted}</td><td style="text-align:center;padding:0 6px">${p.stats.spied||0}</td></tr>`).join('');
+    h+='</table></div>';
+  }
+  $('endSub').innerHTML=h;
+}
+</script>
+</body>
+</html>
